@@ -124,7 +124,7 @@ We can now customize the following elements of the webpage:
   - To change your introduction:
     - In the same index.html file, replace the paragraph beginning “This is a little introductory paragraph”        with your own introduction.
   
-  - To change your picture, follow these instructions.
+  - To change your picture:.
       - Note that if you prefer not to use a photo of yourself, you can replace it with a stock photo. To do 
       so, replace <img src="https://drive.google.com/uc?export=view&id=1xvxRGAACLqLEMWaw6X_VatbirrIOtepy" 
       with this: <img src="https://image.shutterstock.com/mosaic_250/549673/1198362232/stock-photo-hacking- 
