@@ -254,12 +254,75 @@ We were just able to create and bind our own self-signed certificate to your web
 1. In our Azure portals, access the app service resource we created earlier.
 2. From the menu on the left side of the screen, select “Networking.”
 3. From this page, select “Azure Front Door” under “Inbound networking features"
-4.  
+4. On the next page, since you haven't created your Front Door resource yet, select “Create new” under “Front Door profile.”
+5. This will open a pane on the right side of your screen.
+    - In this pane, name your Front Door “project1-FrontDoor”.
+    - Enter “project1” for the Endpoint name.
+    - The Endpoint hostname will be created automatically based off of the Endpoint name.
+    - Enter in “RedTeam” for the Origin group name.
+    - Select “Premium” for the Pricing Tier.
+    - Click the “OK” button at the bottom of the pane
+6. This will return you to the Azure Front Door page.
+- Click “Create” to update the Front Door instance to your application.
+7. To verify that your Front Door instance has been set up correctly, select “Azure Front Door” (from previous step) again.
+8. The message “Azure Front Door is configured for your web app” should display as confirmation
 
-**Part 10**
-**Part 11**
-**Part 12**
+**Part 10: Analyze WAF Rule Sets**
+Here we will view the features that are provided by your web application firewall 
+1. From our Azure portal, enter "web app" until “Web Application Firewall policies (WAF)” appears as one of the choices in the dropdown.
+2. Select that option. The WAF that you created during the previous step should display on the “Web Application Firewall policies (WAF)” page.
+  - Note: It will begin with “project1frontdoor” and end with several random letters and numbers.
+3. Select your WAF and as the WAF policies page opens, notice the options on the left side of yoru screen
+4. Select “Managed rules” either from the left-hand toolbar or from the box on the bottom of the page. When this page appears, scroll through the page to view the various rules.
+    - Note the following about these rules:
+      - This is the list of the application vulnerabilities that the WAF will protect against
+      - While it’s unlikely that your web application would be impacted by these vulnerabilities, it is   
+        important to note these Azure WAF features, which identify and blocks the application attacks 
+        indicated on this page.
+      - These managed rules can be individually enabled or disabled, and a variety of actions can be taken if 
+         an attack is identified, such as:
+          - Allow the request.
+          - Block the request.
+          - Log the request.
+          - Redirect the request to another webpage.
+            
+**Part 11: Configure Custom WAF Rules**
+Here we will configure a custom WAF rule to protet against a potential security attack. Let’s assume for this project that you have been experiencing a variety of attacks from international IP addresses, and you need to only accept traffic from the locations where your business partners reside: the United States, Canada, and Australia.
+1. Select “Custom rules” from the toolbar on the left-hand side of the screen
+2. To create a custom rule, select “+ Add custom rule.”
+  - When the pane pops up on the right, name your custom rule “Project1rule”.
+  - Leave the status and rule type at the default options.
+  - Set the priority to 100.
+  - Set the following terms for the rule’s condition:
+    - Match type: Geo location
+    - Match variable: Remoteaddr
+    - Operation: is not
+    - Select the three countries (USA, Canada, Australia)
+    - Then: Deny traffic
 
+<img width="561" alt="Screenshot 2024-01-22 at 3 30 07 PM" src="https://github.com/CaptainIndy/CyberBlog/assets/142528700/8bd3e221-8dba-4a4b-9265-5e65e9fe8a6d">
+
+3. Then, click “Add,” and your custom rule should now display on the page,
+
+
+**Part 12: Analyze and Fix a Security Center Recommendation**
+Here we will go over how to use Azure Security Center to analyze and fix a recommendation from the Security Center dashboard. 
+
+1. To access Azure Security Center, from your web app, select “Microsoft Defender for Cloud” from the toolbar on the left.
+2. When the Security Center page opens, it should display counts for both recommendations and alerts (note that your counts may vary).
+  - Review the recommendations, and note that Azure describes the recommendations in this way: “Security Center continuously monitors the configuration of your app services to identify potential security vulnerabilities and recommends actions to mitigate them.”
+3. If your recommendations do not display, below is an example of security recommendations which may appear in this section.
+
+<img width="651" alt="Screenshot 2024-01-22 at 3 36 15 PM" src="https://github.com/CaptainIndy/CyberBlog/assets/142528700/f970b17b-f3d7-49b6-abce-68322a9aac2d">
+
+4. Note that when you select on an individual recommendation, it will then display the recommended steps to remediate this recommendation.
+
+**Part 13: Conclusion**
+Here is a screenshot of my cyberblog I made before I took it down because I did not want to pay for Azure's services. I will redeploy it locally soon and I recommend that after completing this project as a way to post projects, blog about topics you're interested in. GitHub is also great for hosting your own website but this a fun alternative. 
+
+
+
+<img width="653" alt="Screenshot 2024-01-22 at 3 40 19 PM" src="https://github.com/CaptainIndy/CyberBlog/assets/142528700/234612d7-e8d9-4f52-b3de-f5b2bf86fa85">
 
 
 
