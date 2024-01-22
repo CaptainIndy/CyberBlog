@@ -129,8 +129,136 @@ We can now customize the following elements of the webpage:
       so, replace <img src="https://drive.google.com/uc?export=view&id=1xvxRGAACLqLEMWaw6X_VatbirrIOtepy" 
       with this: <img src="https://image.shutterstock.com/mosaic_250/549673/1198362232/stock-photo-hacking- 
       and-malware-concept-hacker-using-abstract-laptop-with-binary-code-digital-interface-1198362232.jpg"
+**Backing up your HTML**
+  - Restarting your virtual machine will often clear out any updates to your HTML files. Therefore, it is 
+  important to back them up every time you make an update!
+  
+  - After each update to your webpage, use the following command to backup your index.html file to your /home 
+  directory, which stays persistent across reboots.
+    - _cp /var/www/html/index.html /home_
+   - In case you need to restore your index.html file, run the following command:
+    - _cp /home/index.html /var/www/html/_
+**Part 5: Creating a Key Vault**
+1. In your Personal Azure account, select "Key Vaults" from the Azure search field at the top of the page
+2. Select "+ Create" from the Key Vault page to create your key vault
+3. On the "Create key vault" tab, make the following selections:
+  - Subscription/Resource Group: Select the same subscription and resource groups that you selected prior.
+  - Key Vault Name: Choose a key vault name, such as project1-KeyVault. (Note: This name must be globally 
+    unique, so you will be prompted to choose a different name if the one you enter has been used before.)
+  - Region: Select the same region that you selected on prior.
+  - Pricing tier: Select the "Standard" tier.
+4. Click next to the Access Configuration Tab
+  - Select Vault Access Policy
+  - Check the box next to your user name
+  - Click Review + Create
+5. After your key vault has been created, select your new resource to view your new key vault.
+6. Preview the options available on your key vault to store secure information, including:
+  - Keys
+  - Secrets
+  - Certificates
 
-     
+**Part 6: Create a Self-Signed Certificate**
+Now we will return to the command line to create a self-signed certificate using OpenSSL. 
+
+1. From our Azure portal, we will return to the command line. Access that same Cloud Shell from earlier that we used to load our Docker container. 
+2. From the command line enter the following command in the following format with your own information:
+   _openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout <privatekeyname.key> -out <certificatename.crt> -addext "extendedKeyUsage=serverAuth"_
+
+  For example with our information it would be the following: 
+    _openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout project1_key.key -out project1_cert.crt -addext "extendedKeyUsage=serverAuth"_
+      -We added the following options:
+          -x509: Indicates for OpenSSL to create an SSL certificate.
+          -sha256: Uses the sha256 hashing algorithm.
+          -nodes
+          -days 365: States the certificate will be valid for one year.
+          -newkey rsa:2048: Uses a 2048-bit RSA key.
+          -keyout project1_key.key: The outputted name of the private key.
+          -out project1_cert.crt: The outputted name of the certificate.
+          -addext "extendedKeyUsage=serverAuth": Indicates how a public key can be used.
+3. After pressing Enter, you will be asked several questions about your certificate. Answer the following:
+    - Country Name (2 letter code) [AU]: Enter your country.
+    - State or Province Name (full name) [Some State]: Enter your state.
+    - Locality Name (e.g., city) [ ]: Enter your city.
+    - Organization Name (e.g., company) [Internet Widgits Pty Ltd]: Enter "Student".
+    - Organizational Unit Name (e.g., section) [ ]: Leave blank by pressing Enter.
+    - Common Name (e.g., server FQDN or YOUR name) [ ]: Enter your full domain name, such as "bobsblog.com".
+    - Email Address [ ]: Leave blank by pressing Enter.
+4. Now, view your newly created key (.key) and certificate (.crt) by running _ls
+  - Note that Azure requires a PFX format for its certificates. The PFX format is the server certificate and 
+    the private key combined into a single encrypted file.
+5. To create a PFX format, run the following command format:
+    - _openssl pkcs12 -export -out <new_certificatename.pfx> -inkey <keyname.key> -in <certificename.crt>_
+    - For example: _openssl pkcs12 -export -out project1_cert.pfx -inkey project1_key.key -in 
+      project1_cert.crt_
+    - We added the following options:
+      - pkcs12: Indicates for OpenSSL to create a PFX certificate.
+      - export -out project1_cert.pfx: States what to name the PFX file.
+      - inkey project1_key.key: This is the current private key that you are importing.
+      - in project1_cert.crt: This is the current certificate that you are importing.
+6. After pressing Enter, you will be prompted for a password to encrypt your PFX key. Don't forget your password, as you will be prompted for it again shortly! View your new PFX certificate by running _ls
+7. To download your new PFX certificate, complete the following four steps:
+  (1) Click the "Upload/Download" icon in the toolbar above your Cloud Shell window.
+  (2) Select "Download."
+  (3) Enter the name of your PFX certificate in the "Download a file" window.
+  (4) Click "Download."
+
+**Part 7: Import and Bind your Self-Signed Certificate to Your Web App**
+Here we will use Azure to import and bind the certificate we just added to our web application
+
+1. From the Azure Portal, select "Key Vaults."
+  - Select the key vault that we created prior .
+2. From our key vault, select "Certificates" and then "+ Generate/Import,"
+3. On the "Create a certificate" page, select the following:
+    - Method of Certificate Creation: Import
+    - Certificate Name: project1PFX-cert
+    - Upload Certificate File: Select your PFX certificate (it's likely in your Downloads folder)
+    - Password: Enter the password that we created earlior
+4. Select "Create" to upload your certificate.
+  - The following success message should appear to confirm that your PFX certificate has been uploaded to 
+    your key vault:
+5. Now that you have uploaded your certificate, it's time to add it to your web application. To do so, complete the following steps:
+- Return to the web application (under "App Services") that you created prior. 
+- On this page, select "Certificates":
+6. On this page, import your new PFX certificate from your key vault. To do so, complete the following steps:
+   - Select "Bring your own certificates."
+   - Click "+ add certificate."
+   - Under source, select Import from Key Vault
+   - Select the Key Vault you created earlier and the Certificate that you imported
+7. Click Select and Validate as shown in the image below
+
+<img width="556" alt="Screenshot 2024-01-22 at 2 58 02 PM" src="https://github.com/CaptainIndy/CyberBlog/assets/142528700/a92bbcc8-1c46-44d0-a534-87a019c61307">
+
+8. Return to Custom Domains and click Add Binding
+9 .From the Add TLS/SSL binding screen, select your certificate from the dropdown. Leave TLS/SSL Type at SNI SSL and click “add”
+10. Now, open a browser and access your web application. Did you web browser return an error? The error message may look slightly different depending on your browser.
+11. Let's examine the certificate that you just added. Click "Not secure" in the search bar if you are in Chrome, or a similar message depending on your browser.
+  - After selecting "Not secure," select "Certificate (Invalid)" from the menu to examine your certificate.
+  - **Note the reason for your error based on the message on your certificate. This message is due to the fact that your certificate was created by you and not a trusted CA.**
+12. Next, click the "Details" tab of your certificate, then select the "Subject" option
+    - Note the results that now display in the box on the bottom; these were the options that you selected when you created your certificate with OpenSSL.
+
+**Part 8: Create and Bind an App Service Managed Certificate**
+Here we will use Azure's managed certificate to create and bind a more secure certificate to our web apps.
+We were just able to create and bind our own self-signed certificate to your web application to encrypt our web traffic. However, unfortunately, our browser displayed warnings to visitors that our website is not trusted and that there may be security risks associated with our web application.
+
+1. First, return to "Certificates" under your web application.
+2. Select "Managed Certificates."
+3. Select "+ Add Certificate."
+4. When the pop-up appears on the right side of your screen, select your domain and click "Create" and then "Validate".
+5. Click Add (NOTE - It may take up to 10 minutes to validate and add the managed certificate)
+6. Return to Custom Domains, select Add binding next your domain name and select update binding
+7. Select the Certificate you just created and click update
+8. Now that your new app services managed certificate has been bound to your web application, revisit your website. You should not see any warnings displayed this time! Our Web apps are now secured with a trusted SSL certificate
+
+**Part 9: Create a Front Door Instance**
+1. In our Azure portals, access the app service resource we created earlier.
+2. From the menu on the left side of the screen, select “Networking.”
+3. From this page, select “Azure Front Door” under “Inbound networking features"
+4.  
+
+**Part 10**
+**Part 11**
+**Part 12**
 
 
 
