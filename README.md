@@ -104,6 +104,35 @@ We can now customize the following elements of the webpage:
 - Your picture
 - Two custom blog posts on topics of your choice
 
+1. To design and customize your webpage, you'll need to access the HTML pages of your new web application.
+   - To access these pages, you need to SSH over to your container and access the HTML files.
+   - Return to your web app in Azure, select “SSH” from the left-hand toolbar, and then select “GO,”
+2. This will SSH you right into the container.
+   - Once you have access, change directories to the location where the HTML files are located by running _cd /var/www/html_
+3. This directory contains the index.html file that makes up your webpage. To customize your webpage, complete the following steps:
+  - To change your name:
+      - Run: _nano index.html_
+      - Replace “ROBERT SMITH'S CYBER BLOG” with your name/text.
+      - Replace “Hi, I'm Robert!” with your name/text.
+  
+  - To change your email:
+    - In the same index.html file, replace “aaggarwal@2u.com” with your email address.
+  
+  - To change your LinkedIn profile link:
+    - In the same index.html file, replace “https://www.linkedin.com/” with the link to your LinkedIn profile.
+  
+  - To change your introduction:
+    - In the same index.html file, replace the paragraph beginning “This is a little introductory paragraph”        with your own introduction.
+  
+  - To change your picture, follow these instructions.
+      - Note that if you prefer not to use a photo of yourself, you can replace it with a stock photo. To do 
+      so, replace <img src="https://drive.google.com/uc?export=view&id=1xvxRGAACLqLEMWaw6X_VatbirrIOtepy" 
+      with this: <img src="https://image.shutterstock.com/mosaic_250/549673/1198362232/stock-photo-hacking- 
+      and-malware-concept-hacker-using-abstract-laptop-with-binary-code-digital-interface-1198362232.jpg"
+
+     
+
+
 
 
 
